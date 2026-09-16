@@ -27,7 +27,7 @@ test('OAuth is read-only, PKCE protected, account/session bound, one-time and en
   assert.equal(target.origin,'https://accounts.google.com');assert.equal(target.searchParams.get('scope'),scope);assert.equal(target.searchParams.get('code_challenge_method'),'S256');
   assert.equal(target.searchParams.get('redirect_uri'),`${API}/dog/google/callback`);
   const callback=await googleCallback(new Request(`${API}/dog/google/callback?state=${state}&code=fixture-code&returnTo=https://evil.example`),f.env,reply);
-  const location=new URL(callback.headers.get('location'));assert.equal(location.origin,APP);assert.equal(location.pathname,'/dog/');assert.equal(new URLSearchParams(location.hash.slice(1)).get('google-code'),'fixture-code');
+  const location=new URL(callback.headers.get('location'));assert.equal(location.origin,APP);assert.equal(location.pathname,'/');assert.equal(new URLSearchParams(location.hash.slice(1)).get('google-code'),'fixture-code');
   const pending=await f.DB.prepare('SELECT * FROM dog_google_oauth').first();
   assert.equal((await f.request('complete','POST',{state,code:'fixture-code'},'two')).status,400);
   let exchanges=0;
