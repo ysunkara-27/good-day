@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 import {localDay} from '../model.mjs';
-const require=createRequire(new URL('../../savetheworld/package.json',import.meta.url));
+const require=createRequire(import.meta.url);
 const {chromium,expect}=require('@playwright/test');
 const browser=await chromium.launch({channel:'chrome',headless:true});
 try{
@@ -21,7 +21,7 @@ try{
   if(path.endsWith('/events'))return failed?route.fulfill({status:502,json:{error:'Calendar could not refresh. Please try again.'}}):route.fulfill({json:{connected:true,events,updated:Date.now()}});
   return route.fulfill({status:503,json:{error:'Test provider is not connected.'}});
  });
- await page.goto('http://127.0.0.1:8095/dog/');
+ await page.goto('http://127.0.0.1:8097/');
  await page.locator('#auth-switch').click();await page.locator('#username').fill(`cal_${Date.now()}`);await page.locator('#password').fill('test-password-123');await page.locator('#auth-submit').click();await expect(page.locator('#onboarding-intro')).toBeVisible();await page.locator('#onboarding-done').click();
  await expect(page.locator('.calendar-event')).toHaveCount(2);
  await expect(page.locator('#all-day-events')).toContainText('Office closed');

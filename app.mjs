@@ -22,11 +22,27 @@ function setBusy(value){busy=value;for(const element of document.querySelectorAl
 function showAuth(){
  loadSequence++;agendaView='all';groupColors={};setBusy(false);signup=false;updateAuthMode();
  $('edit-dialog').close();$('pet-dialog').close();$('account-dialog').close();calendarSequence++;calendar={ready:false,connected:false,reconnect:false,events:[],updated:null,error:'',loading:false};$('loading').hidden=true;$('auth').hidden=false;
- $('workspace').hidden=true;$('account').hidden=true;$('date-control').hidden=true;$('reload').hidden=true;
+ $('workspace').hidden=true;$('account').hidden=true;$('date-control').hidden=true;$('reload').hidden=true;$('load-error').hidden=true;
  care=null;resetTimer();plan={start:540,tasks:[]};pet={...defaultPet};companion.setProfile(pet);
  renderDog();renderFocus();$('date-label').textContent='';$('page-title').textContent='Your day.';
 }
-async function loadDay(){const sequence=++loadSequence;$('loading').hidden=false;$('workspace').hidden=true;$('auth').hidden=true;setBusy(true);try{const data=await api(`day?date=${day}&zone=${zone()}`);if(sequence!==loadSequence)return;care=data.care;groupColors=data.groupColors||{};username=data.username;revision=data.revision;pet={...defaultPet,...data.pet};companion.setProfile(pet);const now=new Date();plan=data.plan||{start:day===localDay()?Math.min(1425,Math.max(540,Math.ceil((now.getHours()*60+now.getMinutes())/15)*15)):540,tasks:[]};$('workspace').hidden=false;$('account').hidden=false;$('account').textContent='Account';$('account').title=`Signed in as ${username}`;$('date-control').hidden=false;$('reload').hidden=true;restoreDraft();render();loadCalendar();if(data.carried?.moved)notice(`${data.carried.moved} unfinished ${data.carried.moved===1?'task moved':'tasks moved'} into today.`);if(data.carried?.pending)notice(`${data.carried.pending} unfinished tasks remain on earlier days. Today is at its 100-task limit.`,true);}catch(error){if(sequence===loadSequence||!token)notice(error.message,true);if(token)$('reload').hidden=false;}finally{if(sequence===loadSequence){$('loading').hidden=true;setBusy(false);}}}
+async function loadDay(){
+ const sequence=++loadSequence,recovering=!$('load-error').hidden;
+ $('load-error').hidden=true;$('reload').hidden=true;$('loading').hidden=false;$('workspace').hidden=true;$('auth').hidden=true;setBusy(true);
+ try{
+  const data=await api(`day?date=${day}&zone=${zone()}`);if(sequence!==loadSequence)return;
+  care=data.care;groupColors=data.groupColors||{};username=data.username;revision=data.revision;pet={...defaultPet,...data.pet};companion.setProfile(pet);
+  const now=new Date();plan=data.plan||{start:day===localDay()?Math.min(1425,Math.max(540,Math.ceil((now.getHours()*60+now.getMinutes())/15)*15)):540,tasks:[]};
+  $('workspace').hidden=false;$('account').hidden=false;$('account').textContent='Account';$('account').title=`Signed in as ${username}`;$('date-control').hidden=false;
+  if(recovering)$('notice').hidden=true;
+  restoreDraft();render();loadCalendar();
+  if(data.carried?.moved)notice(`${data.carried.moved} unfinished ${data.carried.moved===1?'task moved':'tasks moved'} into today.`);
+  if(data.carried?.pending)notice(`${data.carried.pending} unfinished tasks remain on earlier days. Today is at its 100-task limit.`,true);
+ }catch(error){
+  if(sequence===loadSequence&&token){$('load-error').hidden=false;$('notice').hidden=true;}
+  else if(!token)notice(error.message,true);
+ }finally{if(sequence===loadSequence){$('loading').hidden=true;setBusy(false);}}
+}
 async function save(next){if(busy)return false;setBusy(true);try{const data=await api(`day?date=${day}&zone=${zone()}`,'PUT',{plan:next,revision});plan=data.plan;revision=data.revision;care=data.care;render();return true;}catch(error){notice(error.message,true);return false;}finally{setBusy(false);}}
 function renderDog(){
  const done=plan.tasks.filter(t=>t.done).length,pct=progress(plan.tasks);
@@ -161,6 +177,8 @@ $('edit-form').onsubmit=async event=>{event.preventDefault();if(!$('edit-name').
 $('delete-task').onclick=async()=>{if(await save({...plan,tasks:plan.tasks.filter(t=>t.id!==editId)})){$('edit-dialog').close();notice('Task removed.');}};
 async function changeDay(value){if(!value||busy)return;day=value;calendarSequence++;calendar.events=[];calendar.updated=null;calendar.error='';resetTimer();renderFocus();await loadDay();}
 $('day').onchange=()=>changeDay($('day').value);$('today').onclick=()=>changeDay(localDay());$('reload').onclick=()=>loadDay();
+$('retry-load').onclick=()=>loadDay();
+window.addEventListener('online',()=>{if(token&&!busy&&!$('load-error').hidden)loadDay();});
 setInterval(()=>{tick();const current=localDay();if(current!==knownToday&&!busy){const wasToday=day===knownToday;knownToday=current;if(wasToday&&token){notice('Showing today. Previous days are in the date picker.');changeDay(current);}}},500);
 function openPet(){
  $('pet-name').value=pet.name;$('pet-coat').value=pet.coat;$('pet-collar').value=pet.collar;

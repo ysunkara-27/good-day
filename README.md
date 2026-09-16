@@ -1,6 +1,6 @@
 # task pup planner
 
-A small static daily planner with a customizable inline SVG puppy. No frontend framework, build step, external fonts, or new service. Uses the existing Cloudflare Worker and D1 database, with isolated `dog_*` tables. Vercel project `good-day` serves `https://www.taskpup.lol/` from this repository. `npm run build` copies public frontend files into `dist/`; backend source, tests, and environment files are excluded. Legacy `/dog/` links redirect to the root.
+A static daily planner with a customizable inline SVG puppy, hosted by the `good-day` Vercel project at https://www.taskpup.lol. `npm run build` copies only frontend assets to `dist`; server code, tests and schema are not published. The API uses the existing Cloudflare Worker and D1 database with isolated `dog_*` tables.
 
 Tasks are stored per account and local calendar date. Tasks without a chosen time retain their relative order and fill available gaps from the day’s start. Optional `scheduledStart` is a local minute-of-day (0–1439); fixed tasks retain that time and the final schedule is displayed chronologically. Explicit overlaps are flagged, never silently rescheduled. Existing tasks without this field stay automatic; no schema migration is needed for task times. Completed tasks keep their slot; the next incomplete task is marked. Date selection opens past or future plans. Overnight blocks show a day offset. A local midnight rolls today's view forward; yesterday remains in the date picker. Unfinished tasks carry into today by default at local midnight or when the planner is next opened. Account can disable carryover. Completed tasks stay on their original date; carried tasks lose their old fixed start time and are scheduled around today’s calendar. Transfer is atomic and revision-checked, with a 100-task destination limit; overflow stays on its original dates. There is no background cron or recurring-task creation.
 
@@ -10,46 +10,47 @@ Task entry accepts one task or one task per line. Enter submits; Shift+Enter add
 
 Signup includes a dog name, four coats, and three collars. Existing accounts default to Biscuit and can customize from the dog menu. Appearance and the wandering preference persist in `dog_profiles`, independently of daily plans. Rerun the idempotent schema when upgrading to add this table.
 
-## Local preview
+## Hosting and account continuity
 
-The planner is a static Vercel site. Its authenticated API remains the existing Cloudflare Worker at `https://hooraas-rides-api.sunkarayashaswi.workers.dev/dog/`; deploy that Worker separately with the schema in this repository.
+The authenticated API remains `https://hooraas-rides-api.sunkarayashaswi.workers.dev/dog/`. Production Worker ownership is still in `reyash/rides/api`, which imports `reyash/dog/api.mjs`. Editing the backend copies in this frontend repository alone does **not** deploy the shared Worker. Keep backend changes synchronized with that source and deploy using its explicit config. Do not replace the shared Worker with a dog-only entrypoint: it also serves rides.
+
+Both Taskpup origins are allowlisted. Porkbun manages DNS; Vercel serves HTTPS; Cloudflare runs the API and D1. The old `/dog` pages redirect to Taskpup. Existing usernames, passwords, plans, colors, care and Google connections remain in the same D1 database. Visitors must sign in once on the new origin because browser sessions cannot transfer across domains. Do not rotate `SESSION_SECRET` or create a fresh database during this migration.
 
 ## Local preview
 
 ```sh
-npx wrangler@4.128.0 d1 execute hooraas-rides --local --persist-to /private/tmp/good-day-d1 --file=./schema.sql
-npx wrangler@4.128.0 dev --port 8791 --persist-to /private/tmp/good-day-d1 --var ALLOWED_ORIGIN:http://127.0.0.1:8095
+# From the sibling reyash checkout (shared backend):
+npx wrangler@4.128.0 d1 execute hooraas-rides --config rides/api/wrangler.jsonc --local --persist-to /private/tmp/taskpup-migration-d1 --file dog/schema.sql
+npx wrangler@4.128.0 dev --config rides/api/wrangler.jsonc --port 8791 --persist-to /private/tmp/taskpup-migration-d1 --var ALLOWED_ORIGIN:http://127.0.0.1:8097
 ```
 
 From the repository root, in another terminal:
 
 ```sh
-python3 -m http.server 8095 --bind 127.0.0.1
+npm ci
+python3 -m http.server 8097 --bind 127.0.0.1
 ```
 
-Open http://127.0.0.1:8095/. Create a disposable account. This uses a separate local database and does not touch production.
+Open http://127.0.0.1:8097/. Create a disposable account. This uses a separate local database and does not touch production.
 
 ## Checks
 
 ```sh
 npm test
-node tests/api.mjs
-node tests/browser.mjs
-node tests/pet-motion.mjs
-node tests/time-browser.mjs
-node tests/loading-browser.mjs
-node tests/calendar-browser.mjs
+npm run test:api
+npm run test:browser
+npm run build
 ```
 
-Integration tests are hardcoded to the isolated local ports above. Browser checks use the existing `savetheworld` Playwright dependency and installed Chrome. API/browser tests create disposable local accounts. Authentication is rate limited to 20 attempts per IP per 15 minutes, so repeated test runs in the same window can hit that limit.
+Integration tests target the isolated local ports above. Browser checks use this repository's Playwright dependency and installed Chrome. Tests create disposable local accounts. Authentication is rate limited to 20 attempts per IP per 15 minutes, so repeated runs can hit that limit. `RUN_LIVE_TASKPUP=1 node tests/live-migration.mjs` explicitly tests production and creates a disposable account; its username is recorded in `/private/tmp/taskpup-smoke-account.json` for cleanup. Google provider exchanges are mocked locally; a real Google consent/verification check requires an authorized Google account.
 
 ## Production release
 
-Apply the additive schema before deploying the Worker:
+For backend changes, synchronize the shared backend source and run from the `reyash` checkout. Apply additive schema changes before deploying:
 
 ```sh
-npx wrangler@4.128.0 d1 execute hooraas-rides --remote --file=./schema.sql
-npx wrangler@4.128.0 deploy
+npx wrangler@4.128.0 d1 execute hooraas-rides --config rides/api/wrangler.jsonc --remote --file dog/schema.sql
+npx wrangler@4.128.0 deploy --config rides/api/wrangler.jsonc
 ```
 
 Then deploy this repository as its own Vercel project. The production domain is `https://taskpup.lol/`; add it to the Vercel project and to the Worker `ALLOWED_ORIGIN` variable. The optional Google connection needs its Client ID and Client secret; see [Google Calendar setup](GOOGLE-CALENDAR-SETUP.md).
@@ -64,7 +65,7 @@ The current dog has daily food, exercise, and comfort needs. Completing the firs
 
 Research, design tradeoffs, and the unrun human usability protocol: [RESEARCH-AND-UX.md](RESEARCH-AND-UX.md).
 
-Additional checks: `node --test dog/tests/care.test.mjs` and `node dog/tests/care-browser.mjs` (local frontend 8095, isolated Worker 8791, Chrome required).
+Care tests are included in `npm test` and `npm run test:browser`.
 
 ## Desktop workspace
 
@@ -76,4 +77,4 @@ Carryover adds `dog_settings` and a transient `dog_rollover_moves` table. Apply 
 
 Task group colors are account-wide, case-insensitive assignments. Add/edit a task, enter its group, then choose Group color (Automatic or one of six themed colors). Changes immediately apply across days, including carried tasks. `dog_group_colors` is additive in `schema.sql`; apply the schema before deploying this API update.
 
-Startup uses absolute `/dog/` asset URLs and an inline, styled loading/recovery screen. The planner is revealed only after its stylesheets and JavaScript modules load. Failed or stalled loads show a retry link after at most 12 seconds; disabled JavaScript gets an explicit message. Retry preserves browser storage. Test these paths with `node dog/tests/loading-browser.mjs`.
+Startup uses root-relative asset URLs and an inline, styled loading/recovery screen. The planner is revealed only after its stylesheets and modules load. Failed or stalled loads show a retry link after at most 12 seconds; disabled JavaScript gets an explicit message. API load failures show a retry card and recover when connectivity returns. Retry preserves browser storage. These paths are included in the loading and recovery browser tests.

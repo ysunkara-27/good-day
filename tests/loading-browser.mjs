@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-const require=createRequire(new URL('../../savetheworld/package.json',import.meta.url));
+const require=createRequire(import.meta.url);
 const {chromium,expect}=require('@playwright/test');
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
@@ -9,11 +9,11 @@ try{
  for(const scenario of ['normal','no-trailing-slash','missing-css','missing-module','slow-css','no-javascript']){
   const context=await browser.newContext({javaScriptEnabled:scenario!=='no-javascript',viewport:{width:1024,height:700}});
   const page=await context.newPage();
-  if(scenario==='no-trailing-slash')await page.route('http://127.0.0.1:8095/dog',route=>route.fulfill({contentType:'text/html',body:html}));
-  if(scenario==='missing-css')await page.route('**/dog/style.css',route=>route.abort());
-  if(scenario==='missing-module')await page.route('**/dog/group-colors.mjs',route=>route.abort());
-  if(scenario==='slow-css')await page.route('**/dog/workspace.css',async route=>{await new Promise(resolve=>setTimeout(resolve,1000));await route.continue();});
-  await page.goto('http://127.0.0.1:8095/dog'+(scenario==='no-trailing-slash'?'':'/'),{waitUntil:'domcontentloaded'});
+  if(scenario==='no-trailing-slash')await page.route('http://127.0.0.1:8097',route=>route.fulfill({contentType:'text/html',body:html}));
+  if(scenario==='missing-css')await page.route('**/style.css',route=>route.abort());
+  if(scenario==='missing-module')await page.route('**/group-colors.mjs',route=>route.abort());
+  if(scenario==='slow-css')await page.route('**/workspace.css',async route=>{await new Promise(resolve=>setTimeout(resolve,1000));await route.continue();});
+  await page.goto('http://127.0.0.1:8097'+(scenario==='no-trailing-slash'?'':'/'),{waitUntil:'domcontentloaded'});
   if(['normal','no-trailing-slash','slow-css'].includes(scenario)){
    await expect(page.locator('html')).toHaveAttribute('data-boot','ready');
    await expect(page.locator('#auth')).toBeVisible();await expect(page.locator('#boot-screen')).toBeHidden();

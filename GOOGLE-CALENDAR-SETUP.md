@@ -1,6 +1,6 @@
 # Connect Google Calendar to task pup
 
-The implemented flow is **Account → Connect Google Calendar → allow read-only access → return to /dog**. It reads the user's **primary** Google calendar. It never creates, changes, deletes, or checks off Google events. No Google password is entered into this site.
+The implemented flow is **Account → Connect Google Calendar → allow read-only access → return to Taskpup's root page**. It reads the user's **primary** Google calendar. It never creates, changes, deletes, or checks off Google events. No Google password is entered into this site.
 
 ## 1. Create the Google project and client
 
@@ -37,7 +37,7 @@ For an app available beyond your test users, complete Google's production consen
 
 ## 2. Put the credentials in Cloudflare
 
-From the repository's `rides/api` directory:
+From the sibling `reyash` repository's `rides/api` directory (the shared production Worker is still deployed there):
 
 ```sh
 npx wrangler@4.128.0 secret put GOOGLE_CLIENT_ID
@@ -59,9 +59,9 @@ npx wrangler@4.128.0 d1 execute hooraas-rides --remote --file=../../dog/schema.s
 npx wrangler@4.128.0 deploy
 ```
 
-Publish the static site through its normal deployment process. Existing allowed origins already include `https://ysunkara.com` and `https://www.ysunkara.com`.
+Publish this frontend repository through the `good-day` Vercel project. The Worker allows `https://taskpup.lol`, `https://www.taskpup.lol`, and both legacy `ysunkara.com` origins. Taskpup callbacks return to `/`; legacy callbacks retain `/dog/`.
 
-Then visit `/dog`, log in, open **Account**, and click **Connect Google Calendar**. Choose the Google test-user account, approve read-only access, and return to the planner. The consent screen can show a testing/unverified notice until the public app is approved.
+Then visit `https://www.taskpup.lol/`, log in, open **Account**, and click **Connect Google Calendar**. Choose the Google test-user account, approve read-only access, and return to the planner. The consent screen can show a testing/unverified notice until the public app is approved. Credential presence and automated callback tests do not establish Google's production verification status; confirm that separately in Google Auth Platform before a public calendar launch.
 
 For code ownership, state transitions, scheduling rules, and data flow, see [Calendar architecture](CALENDAR-ARCHITECTURE.md).
 

@@ -31,6 +31,7 @@
   </section>
   <section id="auth" class="auth-card" hidden>
     <h2 id="auth-title">Log in</h2>
+    <p class="small">Used Good day at ysunkara.com/dog? Log in with the same username and password. Your saved plans and dog are here.</p>
     <form id="auth-form">
       <div class="credentials"><label>Username<input id="username" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]{3,24}" placeholder="your-name" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="At least 8 characters" required></label></div>
       <section id="signup-pet" hidden>
@@ -44,6 +45,11 @@
     <button id="auth-switch" class="quiet">New here? Create an account</button><p class="small recovery-note">No password recovery yet. Keep your login somewhere safe.</p>
   </section>
   <div id="loading" class="loading">Loading…</div>
+  <section id="load-error" class="auth-card" role="status" hidden>
+    <h2>Let’s reconnect</h2>
+    <p>Your day hasn’t loaded yet. Check your connection and try again.</p>
+    <button id="retry-load" class="primary" type="button">Try again</button>
+  </section>
   <div class="layout" id="workspace" hidden>
     <section class="planner">
       <form id="task-form" class="task-form">

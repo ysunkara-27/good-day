@@ -4,6 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs",
-    "test": "node --test tests/model.test.mjs tests/google-calendar.test.mjs tests/agenda.test.mjs tests/rollover.test.mjs tests/group-colors.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "test:api": "node tests/api.mjs && node tests/rollover-api.mjs",
+    "test:browser": "node tests/browser.mjs && node tests/calendar-browser.mjs && node tests/care-browser.mjs && node tests/time-browser.mjs && node tests/pet-motion.mjs && node tests/loading-browser.mjs && node tests/recovery-browser.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
   }
 }

@@ -1,12 +1,12 @@
 import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
-const require=createRequire(new URL('../../savetheworld/package.json',import.meta.url));
+const require=createRequire(import.meta.url);
 const {chromium}=require('@playwright/test');
 const browser=await chromium.launch({channel:'chrome',headless:true});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
  await page.clock.install();
- await page.goto('http://127.0.0.1:8095/dog/');
+ await page.goto('http://127.0.0.1:8097/');
  await page.locator('#auth').waitFor({state:'visible'});
  const positions=[];
  // Advance the quiet intervals and inspect actual animated positions along the route.
