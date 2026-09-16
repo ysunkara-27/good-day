@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build-site.mjs",
     "test": "node --test tests/model.test.mjs tests/google-calendar.test.mjs tests/agenda.test.mjs tests/rollover.test.mjs tests/group-colors.test.mjs"
   }
 }

@@ -1,7 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "outputDirectory": ".",
+  "installCommand": "",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/dog", "destination": "/", "permanent": true },
+    { "source": "/dog/:path*", "destination": "/:path*", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",
