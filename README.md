@@ -1,4 +1,4 @@
-# Good day planner
+# task pup planner
 
 A small static daily planner with a customizable inline SVG puppy. No frontend framework, build step, external fonts, or new service. Uses the existing Cloudflare Worker and D1 database, with isolated `dog_*` tables. Vercel project `good-day` serves `https://www.taskpup.lol/` from this repository. `npm run build` copies public frontend files into `dist/`; backend source, tests, and environment files are excluded. Legacy `/dog/` links redirect to the root.
 

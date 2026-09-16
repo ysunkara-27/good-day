@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5ee"><meta name="description" content="Your tasks, a daily schedule, and your own little dog.">
-  <title>Good day — daily planner</title>
+  <title>task pup — daily planner</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ctext y='32' font-size='32'%3E🐶%3C/text%3E%3C/svg%3E">
 <style>
     [hidden]{display:none!important}
@@ -18,10 +18,10 @@
   <link id="base-style" rel="stylesheet" href="/style.css"><link id="workspace-style" rel="stylesheet" href="/workspace.css">
 </head>
 <body class="planner-page">
-<section id="boot-screen" role="status" aria-live="polite"><h1>✿ good day.</h1><p id="boot-message">Opening your planner…</p><a id="boot-retry" href="/" hidden>Try again</a><small id="boot-help" hidden>Your saved plans are safe. Check your connection, then try again.</small></section>
-<noscript><style>#boot-screen{display:none!important}</style>Good day needs JavaScript to open your planner. Enable JavaScript in your browser, then <a href="/">reload Good day</a>.</noscript>
+<section id="boot-screen" role="status" aria-live="polite"><h1>✿ task pup.</h1><p id="boot-message">Opening your planner…</p><a id="boot-retry" href="/" hidden>Try again</a><small id="boot-help" hidden>Your saved plans are safe. Check your connection, then try again.</small></section>
+<noscript><style>#boot-screen{display:none!important}</style>task pup needs JavaScript to open your planner. Enable JavaScript in your browser, then <a href="/">reload task pup</a>.</noscript>
 <header class="topbar">
-  <a class="brand" href="/"><span class="brand-icon">✿</span> good day<span class="brand-dot">.</span></a>
+  <a class="brand" href="/"><span class="brand-icon">✿</span> task pup<span class="brand-dot">.</span></a>
   <div class="header-actions"><button id="pet-menu" class="pet-menu" aria-haspopup="dialog"><span id="pet-avatar" aria-hidden="true"></span><span id="pet-menu-name">Biscuit</span></button><button id="account" class="quiet" aria-haspopup="dialog" hidden>Account</button></div>
 </header>
 <main>
@@ -88,7 +88,7 @@
   </div>
   <div id="notice" role="status" aria-live="polite" hidden></div><button id="reload" hidden class="quiet">Reload day</button>
 </main>
-<footer class="legal-footer"><p>Good day is a daily planner with a focus timer, a virtual dog, and optional read-only Google Calendar events.</p><nav aria-label="Legal"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a></nav></footer>
+<footer class="legal-footer"><p>task pup is a daily planner with a focus timer, a virtual dog, and optional read-only Google Calendar events.</p><nav aria-label="Legal"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a></nav></footer>
 <div id="pet-wanderer" class="pet-wanderer" data-action="idle"><span id="pet-reaction" class="pet-reaction" aria-live="polite"></span><button id="pet-button" aria-label="Play with Biscuit" aria-haspopup="dialog"><span id="pet-sprite"></span></button><span class="pet-held-ball" aria-hidden="true"></span></div><div id="pet-world-ball" class="pet-world-ball" aria-hidden="true" hidden></div>
 <dialog id="composer-dialog" class="workspace-dialog" aria-labelledby="composer-title"><div class="dialog-heading"><h2 id="composer-title">Add tasks</h2><button id="close-composer" class="quiet" type="button" aria-label="Close task entry">✕</button></div></dialog>
 <dialog id="timer-dialog" class="workspace-dialog" aria-label="Focus timer"><div class="dialog-heading"><h2>Focus timer</h2><button id="close-timer" class="quiet" type="button" aria-label="Close timer">✕</button></div></dialog>
@@ -96,7 +96,7 @@
   <div class="dialog-heading"><h2>Account</h2><button type="button" id="close-account" class="quiet" aria-label="Close account">✕</button></div>
   <p id="account-name" class="account-name"></p><p id="onboarding-intro" class="settings-copy" hidden>Make yourself at home. Connect a calendar if you like, and choose how unfinished tasks move forward. You can change these settings anytime.</p>
   <section class="planner-settings"><h3>Your day</h3><label class="setting-toggle"><input id="auto-rollover" type="checkbox" checked>Move unfinished tasks into today automatically</label><p class="settings-copy">Runs at the start of a new day or when you return. Completed tasks stay behind; carried tasks get a fresh, automatic time. Up to 100 tasks fit in a day; any extra stay on their original dates.</p><p id="settings-status" class="settings-copy" role="status"></p></section>
-  <section class="calendar-settings"><h3>Google Calendar</h3><p>Primary calendar · Read only</p><p>When connected, Good day reads event titles, times, and availability from your primary calendar to show your schedule and place tasks around busy events. Our backend processes this data and stores encrypted connection credentials. <a href="/privacy/">How your data is handled</a>.</p><p id="google-status" role="status"></p><p id="google-detail"></p><p>Busy timed events reserve space for automatic tasks. All-day and free events stay visible without blocking time. Fixed task times stay put and flag overlaps. Tasks remain in Good day.</p>
+  <section class="calendar-settings"><h3>Google Calendar</h3><p>Primary calendar · Read only</p><p>When connected, task pup reads event titles, times, and availability from your primary calendar to show your schedule and place tasks around busy events. Our backend processes this data and stores encrypted connection credentials. <a href="/privacy/">How your data is handled</a>.</p><p id="google-status" role="status"></p><p id="google-detail"></p><p>Busy timed events reserve space for automatic tasks. All-day and free events stay visible without blocking time. Fixed task times stay put and flag overlaps. Tasks remain in task pup.</p>
     <button id="google-connect" class="primary" type="button">Connect Google Calendar</button>
     <div id="google-connected" hidden><button id="google-refresh" class="quiet" type="button">Refresh</button><button id="google-disconnect" class="quiet" type="button">Disconnect</button></div>
   </section>
