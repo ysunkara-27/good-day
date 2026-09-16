@@ -9,10 +9,10 @@ The implemented flow is **Account → Connect Google Calendar → allow read-onl
 3. Open **Google Auth Platform**. Complete **Branding** with an app name, your support email, and developer contact email.
    Use these public URLs in Branding after publishing the static site:
 
-   - **Application home page:** your new Good day Vercel domain
-   - **Privacy policy:** `<new-domain>/privacy/`
-   - **Terms of service:** `<new-domain>/terms/`
-   - **Authorized domain:** your new domain
+   - **Application home page:** `https://taskpup.lol/`
+   - **Privacy policy:** `https://taskpup.lol/privacy/`
+   - **Terms of service:** `https://taskpup.lol/terms/`
+   - **Authorized domain:** `taskpup.lol`
 
    Both legal pages work without login or JavaScript and are linked from the planner. Their contact address is the site's published `bgn2bs@virginia.edu`; keep it and the consent-screen support contact current. Verify ownership of the domain as required by Google. Confirm all three URLs load publicly after deployment before submitting for verification.
 

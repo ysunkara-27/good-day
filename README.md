@@ -52,7 +52,7 @@ npx wrangler@4.128.0 d1 execute hooraas-rides --remote --file=./schema.sql
 npx wrangler@4.128.0 deploy
 ```
 
-Then deploy this repository as its own Vercel project. Set the new domain as the Vercel project domain and add that origin to the Worker `ALLOWED_ORIGIN` variable. The optional Google connection needs its Client ID and Client secret; see [Google Calendar setup](GOOGLE-CALENDAR-SETUP.md).
+Then deploy this repository as its own Vercel project. The production domain is `https://taskpup.lol/`; add it to the Vercel project and to the Worker `ALLOWED_ORIGIN` variable. The optional Google connection needs its Client ID and Client secret; see [Google Calendar setup](GOOGLE-CALENDAR-SETUP.md).
 
 Accounts use lowercase usernames, random salts, and PBKDF2-SHA256 (100,000 iterations, the existing Workers-compatible hashing pattern). Passwords are never returned or stored in plaintext. Random 256-bit bearer sessions last 30 days, are stored hashed in D1, and are revoked on logout. The client keeps the bearer token in localStorage on the existing site origin. All same-origin scripts share this trust boundary. There is no email, password recovery, or account management in v1; the sign-in screen explains this. Auth endpoints rate-limit by IP. Every plan read/write derives its owner from the session. Writes use revision checks; failed saves leave the form intact, and conflicts offer a reload.
 
