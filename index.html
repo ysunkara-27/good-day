@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en" data-boot="pending">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5ee"><meta name="description" content="Your tasks, a daily schedule, and your own little dog.">
+  <title>Good day — daily planner</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ctext y='32' font-size='32'%3E🐶%3C/text%3E%3C/svg%3E">
+<style>
+    [hidden]{display:none!important}
+    html{background:#f6f5ee;color:#343e32;font-family:system-ui,sans-serif}body{margin:0}
+    html:not([data-boot="ready"]) body>:not(#boot-screen):not(noscript):not(script){display:none!important}
+    #boot-screen{box-sizing:border-box;width:calc(100% - 40px);max-width:480px;margin:12vh auto;padding:32px;background:#fffef9;border:1px solid #dfe2d3;border-radius:16px;line-height:1.6}
+    #boot-screen h1{font:600 30px Georgia,serif;margin:0 0 14px;color:#435638}
+    #boot-screen p{margin:0 0 20px}#boot-screen a{display:inline-block;padding:10px 16px;border-radius:9px;background:#74875c;color:white;text-decoration:none;font:600 14px system-ui,sans-serif}
+    #boot-screen small{display:block;margin-top:16px;color:#637256}
+    noscript{display:block;max-width:480px;margin:24px auto;padding:20px;font:16px/1.6 system-ui,sans-serif}
+  </style>
+  <link id="base-style" rel="stylesheet" href="/style.css"><link id="workspace-style" rel="stylesheet" href="/workspace.css">
+</head>
+<body class="planner-page">
+<section id="boot-screen" role="status" aria-live="polite"><h1>✿ good day.</h1><p id="boot-message">Opening your planner…</p><a id="boot-retry" href="/" hidden>Try again</a><small id="boot-help" hidden>Your saved plans are safe. Check your connection, then try again.</small></section>
+<noscript><style>#boot-screen{display:none!important}</style>Good day needs JavaScript to open your planner. Enable JavaScript in your browser, then <a href="/">reload Good day</a>.</noscript>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-icon">✿</span> good day<span class="brand-dot">.</span></a>
+  <div class="header-actions"><button id="pet-menu" class="pet-menu" aria-haspopup="dialog"><span id="pet-avatar" aria-hidden="true"></span><span id="pet-menu-name">Biscuit</span></button><button id="account" class="quiet" aria-haspopup="dialog" hidden>Account</button></div>
+</header>
+<main>
+  <section class="heading"><div><div class="eyebrow" id="date-label"></div><h1 id="page-title">Your day.</h1></div>
+      <section class="progress-card"><div class="progress-header"><span id="completed-label">0 tasks done</span><strong id="percent">0%</strong></div><div class="progress-track" role="progressbar" aria-label="Tasks completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><div id="progress-fill"></div></div></section>
+    <div class="date-control" id="date-control" hidden><input id="day" type="date" aria-label="Plan date"><button id="today" class="quiet" type="button">Today</button></div>
+  </section>
+  <section id="auth" class="auth-card" hidden>
+    <h2 id="auth-title">Log in</h2>
+    <form id="auth-form">
+      <div class="credentials"><label>Username<input id="username" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]{3,24}" placeholder="your-name" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="At least 8 characters" required></label></div>
+      <section id="signup-pet" hidden>
+        <div class="adoption-heading"><h3>Meet your dog</h3><div id="signup-preview" class="pet-preview" aria-hidden="true"></div></div>
+        <label>Dog’s name<input id="signup-pet-name" maxlength="24" value="Biscuit" placeholder="Biscuit"></label>
+        <fieldset class="swatches"><legend>Coat</legend><label><input type="radio" name="signup-coat" value="honey" checked><span style="--swatch:#e6b778">Honey</span></label><label><input type="radio" name="signup-coat" value="cream"><span style="--swatch:#f3dfb8">Cream</span></label><label><input type="radio" name="signup-coat" value="cocoa"><span style="--swatch:#99735e">Cocoa</span></label><label><input type="radio" name="signup-coat" value="cloud"><span style="--swatch:#d1d5da">Cloud</span></label></fieldset>
+        <fieldset class="swatches"><legend>Collar</legend><label><input type="radio" name="signup-collar" value="sage" checked><span style="--swatch:#809c76">Sage</span></label><label><input type="radio" name="signup-collar" value="berry"><span style="--swatch:#c68193">Berry</span></label><label><input type="radio" name="signup-collar" value="blue"><span style="--swatch:#7f9ebb">Blue</span></label></fieldset>
+      </section>
+      <button class="primary" id="auth-submit">Log in →</button>
+    </form>
+    <button id="auth-switch" class="quiet">New here? Create an account</button><p class="small recovery-note">No password recovery yet. Keep your login somewhere safe.</p>
+  </section>
+  <div id="loading" class="loading">Loading…</div>
+  <div class="layout" id="workspace" hidden>
+    <section class="planner">
+      <form id="task-form" class="task-form">
+        <label class="task-name-label" for="task-name">What do you need to do?</label>
+        <textarea id="task-name" rows="2" placeholder="e.g. Finish the reading" maxlength="16000" required aria-describedby="task-help"></textarea>
+        <div class="composer-bottom">
+          <div class="duration-control"><span>Duration</span><div class="duration-presets" role="group" aria-label="Quick duration"><button type="button" data-minutes="15" aria-pressed="false">15m</button><button type="button" data-minutes="30" aria-pressed="true">30m</button><button type="button" data-minutes="60" aria-pressed="false">1h</button></div><label class="custom-time"><input id="duration" type="number" min="5" max="480" value="30" required aria-label="Estimated duration in minutes"><span>min</span></label></div>
+          <button class="primary" id="add-task">+ Add task</button>
+        </div>
+        <div class="composer-extras"><div class="optional-fields"><details id="task-time-details"><summary>Set a time</summary><div class="optional-time"><input id="task-start" type="time" aria-label="Task start time"><button id="clear-task-start" class="quiet" type="button">Clear</button></div><span id="batch-time-hint" class="small" hidden>Tasks will follow one another.</span></details><details id="group-details"><summary>Add a group</summary><input id="group" list="groups" placeholder="e.g. Work" aria-label="Group" maxlength="32"><label class="group-color-control">Group color<select id="group-color" disabled aria-describedby="group-color-note"></select></label><p id="group-color-note" class="small">Applies to this group across all days.</p><p id="group-color-status" class="small" role="status"></p></details></div><span id="task-help">Enter to add · Shift+Enter for another task</span></div>
+        <datalist id="groups"><option value="Work"><option value="Life"><option value="Me time"></datalist>
+      </form>
+      <section class="schedule-panel" aria-label="Daily schedule">
+      <div class="schedule-toolbar"><span id="plan-summary"></span><div class="schedule-tools"><button id="open-composer" class="primary" type="button" aria-haspopup="dialog" hidden>+ Add task</button><button id="open-timer" class="quiet" type="button">Timer</button><label class="start-label">Start at <input type="time" id="start" aria-label="Day start time" value="09:00"></label></div></div>
+      <div id="calendar-status" class="calendar-status" hidden><div class="calendar-connection"><button type="button" id="calendar-manage" class="quiet" aria-haspopup="dialog">Google Calendar</button><span id="calendar-status-text" role="status"></span></div><button type="button" id="calendar-retry" class="quiet">Refresh</button></div>
+      <div id="agenda-controls" class="agenda-controls" hidden><div class="agenda-filters" role="group" aria-label="Schedule view"><button type="button" data-agenda="all" aria-pressed="true">All</button><button type="button" data-agenda="tasks" aria-pressed="false">Tasks</button><button type="button" data-agenda="calendar" aria-pressed="false">Calendar</button></div><span id="agenda-zone"></span></div>
+      <div class="schedule-scroll" tabindex="0" role="region" aria-label="Tasks and calendar events">
+      <div id="all-day-events" class="all-day-events" hidden></div>
+      <div id="timeline"></div>
+      <div id="empty" class="empty"><div class="empty-lines" aria-hidden="true"><span></span><span></span><span></span></div><p id="agenda-empty">Add a task to start your day.</p></div>
+      </div>
+      </section>
+    </section>
+    <aside class="sidekick">
+
+      <section class="care-card" id="care-card" hidden>
+        <button id="care-open" class="care-heading" type="button"><span id="care-name">Biscuit</span><span id="care-badge"></span></button>
+        <div id="pet-home" class="pet-home" aria-hidden="true"><div class="pet-rug"></div><div class="home-bowl"><i></i><i></i><i></i></div><div class="home-toy"></div><div class="home-blanket"></div></div>
+        <p id="care-summary"></p><div id="care-needs" class="care-needs"></div>
+        <button id="care-next" class="care-next" type="button"></button>
+
+      </section>
+      <section id="focus" class="focus-card">
+        <h3 class="timer-title">Timer</h3>
+        <select id="focus-task" aria-label="Timer for"><option value="">Just a timer</option></select>
+        <div id="timer" class="timer" role="timer" aria-label="Time remaining">25:00</div>
+        <label class="timer-duration"><input id="timer-minutes" type="number" required min="1" max="480" value="25" aria-label="Timer duration in minutes"><span>minutes</span></label>
+        <div class="timer-actions"><button id="timer-toggle" class="primary">Start</button><button id="timer-reset" class="quiet">Reset</button></div>
+        <p id="focus-hint" role="status"></p><button id="focus-done" class="quiet finish" hidden>✓ Task finished</button>
+      </section>
+    </aside>
+  </div>
+  <div id="notice" role="status" aria-live="polite" hidden></div><button id="reload" hidden class="quiet">Reload day</button>
+</main>
+<footer class="legal-footer"><p>Good day is a daily planner with a focus timer, a virtual dog, and optional read-only Google Calendar events.</p><nav aria-label="Legal"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a></nav></footer>
+<div id="pet-wanderer" class="pet-wanderer" data-action="idle"><span id="pet-reaction" class="pet-reaction" aria-live="polite"></span><button id="pet-button" aria-label="Play with Biscuit" aria-haspopup="dialog"><span id="pet-sprite"></span></button><span class="pet-held-ball" aria-hidden="true"></span></div><div id="pet-world-ball" class="pet-world-ball" aria-hidden="true" hidden></div>
+<dialog id="composer-dialog" class="workspace-dialog" aria-labelledby="composer-title"><div class="dialog-heading"><h2 id="composer-title">Add tasks</h2><button id="close-composer" class="quiet" type="button" aria-label="Close task entry">✕</button></div></dialog>
+<dialog id="timer-dialog" class="workspace-dialog" aria-label="Focus timer"><div class="dialog-heading"><h2>Focus timer</h2><button id="close-timer" class="quiet" type="button" aria-label="Close timer">✕</button></div></dialog>
+<dialog id="account-dialog" class="account-dialog">
+  <div class="dialog-heading"><h2>Account</h2><button type="button" id="close-account" class="quiet" aria-label="Close account">✕</button></div>
+  <p id="account-name" class="account-name"></p><p id="onboarding-intro" class="settings-copy" hidden>Make yourself at home. Connect a calendar if you like, and choose how unfinished tasks move forward. You can change these settings anytime.</p>
+  <section class="planner-settings"><h3>Your day</h3><label class="setting-toggle"><input id="auto-rollover" type="checkbox" checked>Move unfinished tasks into today automatically</label><p class="settings-copy">Runs at the start of a new day or when you return. Completed tasks stay behind; carried tasks get a fresh, automatic time. Up to 100 tasks fit in a day; any extra stay on their original dates.</p><p id="settings-status" class="settings-copy" role="status"></p></section>
+  <section class="calendar-settings"><h3>Google Calendar</h3><p>Primary calendar · Read only</p><p>When connected, Good day reads event titles, times, and availability from your primary calendar to show your schedule and place tasks around busy events. Our backend processes this data and stores encrypted connection credentials. <a href="/privacy/">How your data is handled</a>.</p><p id="google-status" role="status"></p><p id="google-detail"></p><p>Busy timed events reserve space for automatic tasks. All-day and free events stay visible without blocking time. Fixed task times stay put and flag overlaps. Tasks remain in Good day.</p>
+    <button id="google-connect" class="primary" type="button">Connect Google Calendar</button>
+    <div id="google-connected" hidden><button id="google-refresh" class="quiet" type="button">Refresh</button><button id="google-disconnect" class="quiet" type="button">Disconnect</button></div>
+  </section>
+  <p class="settings-copy">Apple Calendar: Google calendars shown in Apple's app work through the Google connection. Direct iCloud calendar connection is not supported yet.</p>
+  <button id="onboarding-done" class="primary" type="button" hidden>Start planning</button>
+  <button id="logout" class="quiet" type="button">Log out</button>
+</dialog>
+<div id="pet-play-controls" class="pet-play-controls" hidden><button id="pet-toss" class="care-next" type="button" hidden>Toss ball</button><p id="pet-play-hint" class="pet-play-hint" hidden>Click open space to throw. Esc to finish.</p></div>
+<dialog id="pet-dialog" class="pet-dialog">
+  <div class="dialog-heading"><h2 id="pet-dialog-name">Biscuit</h2><button type="button" id="close-pet" class="quiet" aria-label="Close dog menu">✕</button></div>
+  <div id="pet-dialog-preview" class="pet-preview" aria-hidden="true"></div>
+  <p id="pet-need-summary" class="pet-need-summary"></p>
+  <div id="pet-care-actions" class="pet-care-actions"></div>
+  <p id="pet-feedback" class="pet-feedback" role="status"></p>
+  <p id="pet-memory" class="pet-memory"></p>
+  <div class="pet-commands"><button type="button" id="pet-call" class="quiet">Come here</button><button type="button" id="pet-trick" class="quiet" disabled>Learn paw · 3 tasks</button></div>
+  <button id="pet-rest" class="rest-button" type="button">Pause wandering</button>
+  <details id="pet-customize"><summary>Customize</summary><form id="pet-form"><label>Dog’s name<input id="pet-name" maxlength="24" required></label><div class="pet-selects"><label>Coat<select id="pet-coat"><option value="honey">Honey</option><option value="cream">Cream</option><option value="cocoa">Cocoa</option><option value="cloud">Cloud</option></select></label><label>Collar<select id="pet-collar"><option value="sage">Sage</option><option value="berry">Berry</option><option value="blue">Blue</option></select></label></div><button class="primary" id="save-pet">Save</button></form></details>
+</dialog>
+<dialog id="edit-dialog"><form id="edit-form"><h2>Edit task</h2><label>Task<input id="edit-name" maxlength="160" required></label><label>Minutes<input id="edit-minutes" type="number" min="5" max="480" required></label><label>Start time (optional)<div class="optional-time"><input id="edit-start" type="time" aria-label="Edit task start time"><button id="clear-edit-start" class="quiet" type="button">Automatic</button></div></label><label>Group<input id="edit-group" maxlength="32" list="groups"></label><label class="group-color-control">Group color<select id="edit-group-color" disabled aria-describedby="edit-group-color-note"></select></label><p id="edit-group-color-note" class="small">Applies to this group across all days.</p><p id="edit-group-color-status" class="small" role="status"></p><div class="edit-actions"><button type="button" id="delete-task" class="quiet">Delete task</button><button type="button" id="cancel-edit" class="quiet">Cancel</button><button class="primary">Save</button></div></form></dialog>
+<script>
+(function(){
+ var panel=document.getElementById('boot-screen'),timer;
+ function failed(){
+  if(document.documentElement.dataset.boot==='ready')return;
+  document.getElementById('boot-message').textContent='The planner could not finish loading.';
+  document.getElementById('boot-retry').hidden=false;document.getElementById('boot-help').hidden=false;
+ }
+ function stylesheet(id){return new Promise(function(resolve,reject){
+  var link=document.getElementById(id);
+  if(link.sheet&&link.sheet.cssRules.length){resolve();return;}
+  link.addEventListener('load',resolve,{once:true});link.addEventListener('error',reject,{once:true});
+ });}
+ timer=setTimeout(failed,12000);
+ var styles=Promise.all([stylesheet('base-style'),stylesheet('workspace-style')]);
+  Promise.all([styles,import('/app.mjs').then(function(){return import('/workspace.mjs');})]).then(function(){
+  var loaded=getComputedStyle(document.documentElement);
+  if(loaded.getPropertyValue('--good-day-base-ready').trim()!=='1'||loaded.getPropertyValue('--good-day-workspace-ready').trim()!=='1')throw new Error('Styles did not load');
+  clearTimeout(timer);document.documentElement.dataset.boot='ready';panel.hidden=true;
+  requestAnimationFrame(function(){window.dispatchEvent(new Event('resize'));});
+ }).catch(function(){clearTimeout(timer);failed();});
+})();
+</script>
+</body></html>

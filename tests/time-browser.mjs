@@ -1,0 +1,82 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+const require=createRequire(new URL('../../savetheworld/package.json',import.meta.url));
+const {chromium,expect}=require('@playwright/test');
+const browser=await chromium.launch({channel:'chrome',headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ await page.goto('http://127.0.0.1:8095/dog/');
+ await page.locator('#auth-switch').click();
+ await page.locator('#username').fill(`times_${Date.now()}`);
+ await page.locator('#password').fill('test-password-123');
+ await page.locator('#auth-submit').click();
+ await page.locator('#workspace').waitFor({state:'visible'});await page.locator('#close-account').click();
+ // The general timer works before any tasks exist.
+ await expect(page.locator('#focus-task')).toHaveValue('');
+ await page.locator('#timer-minutes').fill('2');
+ await page.locator('#timer-toggle').click();
+ await expect(page.locator('#timer-toggle')).toHaveText('Pause');
+ await expect(page.locator('#timer-minutes')).toBeDisabled();
+ await page.locator('#timer-toggle').click();
+ await page.locator('#timer-reset').click();
+ await expect(page.locator('#timer')).toHaveText('02:00');
+ await expect(page.locator('#focus-done')).toBeHidden();
+ // Exact start time + duration, then an automatic task.
+ await page.locator('#start').fill('09:00');await page.locator('#start').press('Tab');
+ await page.locator('#task-name').fill('Lunch');
+ await page.getByRole('button',{name:'1h',exact:true}).click();
+ await page.locator('#task-time-details summary').click();
+ await page.locator('#task-start').fill('12:30');
+ await page.locator('#add-task').click();
+ await page.locator('#timeline').getByText('Lunch',{exact:true}).waitFor();
+ await expect(page.getByRole('button',{name:'Change start time for Lunch',exact:true})).toContainText('12:30 pm');
+ await expect(page.locator('#task-start')).toHaveValue('');
+ await page.locator('#task-name').fill('Read');
+ await page.locator('#duration').fill('45');
+ await page.locator('#add-task').click();
+ await page.locator('#timeline').getByText('Read',{exact:true}).waitFor();
+ await expect(page.locator('.task-title').first()).toHaveText('Read');
+ await expect(page.getByRole('button',{name:'Change start time for Read',exact:true})).toContainText('9:00 am');
+ // Clicking the time edits it. Explicit overlaps are flagged, not silently shifted.
+ await page.getByRole('button',{name:'Change start time for Read',exact:true}).click();
+ await page.locator('#edit-start').fill('12:45');
+ await page.getByRole('button',{name:'Save',exact:true}).click();
+ await expect(page.locator('.overlap-chip')).toHaveCount(2);
+ await page.reload();
+ await expect(page.getByRole('button',{name:'Change start time for Read',exact:true})).toContainText('12:45 pm');
+ await page.getByRole('button',{name:'Change start time for Read',exact:true}).click();
+ await page.locator('#clear-edit-start').click();
+ await page.getByRole('button',{name:'Save',exact:true}).click();
+ await expect(page.locator('.overlap-chip')).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Change start time for Read',exact:true})).toContainText('9:00 am');
+ // One-click task timer uses all 45 minutes, rather than a hidden 25-minute cap.
+ await page.getByRole('button',{name:'Start timer for Read',exact:true}).click();
+ await expect(page.locator('#timer-toggle')).toHaveText('Pause');
+ await expect(page.locator('#timer-minutes')).toHaveValue('45');
+ await expect(page.locator('#focus-task option:checked')).toHaveText('Read');
+ await page.locator('#timer-toggle').click();
+ await page.locator('#timer-reset').click();
+ await expect(page.locator('#timer')).toHaveText('45:00');
+ await page.locator('#focus-task').selectOption('');
+ await expect(page.locator('#timer')).toHaveText('25:00');
+ await expect(page.locator('#focus-done')).toBeHidden();
+ // A finished general timer does not complete any tasks.
+ await page.clock.install();
+ await page.locator('#timer-minutes').fill('1');
+ await page.locator('#timer-toggle').click();
+ await page.clock.fastForward(61000);
+ await expect(page.locator('#timer')).toHaveText('00:00');
+ await expect(page.locator('#focus-hint')).toHaveText('Time’s up.');
+ await expect(page.locator('#percent')).toHaveText('0%');
+ await page.locator('#timer-reset').click();
+ await page.clock.resume();
+ await page.screenshot({path:'/private/tmp/good-day-timing-desktop.png',fullPage:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.locator('#open-timer').click();
+ await expect(page.locator('#timer-toggle')).toBeInViewport();
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ await page.screenshot({path:'/private/tmp/good-day-timing-mobile.png',fullPage:true});
+ assert.deepEqual(errors,[]);
+ console.log('PASS: general timer with no tasks, exact task times, chronological scheduling, persisted times, overlap flags, clear-to-auto, one-click full-duration task timer, completion without auto-checking tasks, mobile timer shortcut.');
+}finally{await browser.close();}

@@ -1,0 +1,117 @@
+/* Give the schedule the available screen space without shrinking its text.
+   Small windows and zoomed layouts keep the natural document flow. */
+.planner-page .schedule-scroll:focus-visible{outline:3px solid #91a478;outline-offset:3px;border-radius:8px}
+.planner-page:not(:has(#workspace:not([hidden]))) .progress-card{display:none}
+.planner-page .heading>.progress-card{width:200px;margin-left:auto;margin-right:24px}
+@media(max-width:699px){.planner-page .heading>.progress-card{order:3;width:100%;margin:0}.planner-page .heading{flex-wrap:wrap}}
+@media(min-width:0px){
+  .planner-page:has(#workspace:not([hidden])){height:100dvh;display:flex;flex-direction:column;padding-bottom:0}
+  .planner-page:has(#workspace:not([hidden])) .topbar{width:calc(100% - 96px);max-width:1500px;margin:0 auto;height:62px;flex:none}
+  .planner-page:has(#workspace:not([hidden])) main{width:calc(100% - 96px);max-width:1500px;flex:1;min-height:0;padding:12px 0 0;display:flex;flex-direction:column}
+  .planner-page:has(#workspace:not([hidden])) .heading{min-height:58px;margin-bottom:14px;flex:none}
+  .planner-page:has(#workspace:not([hidden])) h1{font-size:38px;margin-top:5px}
+  .planner-page #workspace{grid-template-columns:280px minmax(0,1fr) 220px;gap:24px;flex:1;min-height:0;align-items:stretch}
+  .planner-page .planner{display:contents}
+  .planner-page .task-form{align-self:start;padding:22px;box-shadow:none}
+  .planner-page #task-name{min-height:112px;max-height:180px;resize:none;line-height:1.6}
+  .planner-page .composer-bottom{flex-direction:column;align-items:stretch;gap:18px}
+  .planner-page .duration-control{flex-wrap:wrap;gap:8px}
+  .planner-page .duration-control>span{flex-basis:100%}
+  .planner-page .duration-presets button{padding:7px 9px}
+  .planner-page .custom-time input{width:47px}
+  .planner-page .composer-extras{flex-direction:column;gap:12px;margin-top:20px;padding-top:16px}
+  .planner-page .optional-fields{gap:14px}
+  .planner-page #task-help{text-align:left;font-size:10px}
+  .planner-page .schedule-panel{display:flex;flex-direction:column;min-height:0;min-width:0}
+  .planner-page .schedule-toolbar{margin:0 0 14px;min-height:36px;flex:none}
+  .planner-page .schedule-scroll{overflow:auto;min-height:0;flex:1;padding:3px 10px 12px 3px;scrollbar-gutter:stable;overscroll-behavior:contain}
+  .planner-page .task-row{grid-template-columns:62px minmax(0,1fr);gap:8px;padding-bottom:12px}
+  .planner-page .task-row:before{left:57px}
+  .planner-page .task-card{min-height:92px!important;padding:16px 13px;gap:10px}
+  .planner-page .task-time{padding-right:7px}
+  .planner-page .task-actions{flex-direction:column;gap:8px}
+  .planner-page .task-meta{gap:6px;line-height:1.5}
+  .planner-page .all-day-events{margin-left:70px}
+  .planner-page .sidekick{display:flex;flex-direction:column;gap:14px;min-height:0;overflow-y:auto;scrollbar-width:thin;overscroll-behavior:contain}
+  .planner-page .progress-card{padding:14px 16px;flex:none}
+  .planner-page .progress-header{margin-bottom:9px}
+  .planner-page .focus-card{order:1;margin:0;padding:16px;flex:none;position:relative}
+  .planner-page .focus-card #focus-hint{position:absolute;top:12px;right:16px;margin:0;line-height:20px}
+  .planner-page .focus-card .timer{font-size:40px;margin:10px 0 6px}
+  .planner-page .timer-duration{margin-bottom:10px}
+  .planner-page .focus-card .timer-title{margin-bottom:10px}
+  .planner-page .care-card{order:2;padding:14px 16px;margin:0;flex:none}
+  .planner-page .pet-home{height:80px;margin-top:4px}
+  .planner-page #care-summary{margin:8px 0;font-size:11px}
+  .planner-page .care-needs{gap:4px;margin-bottom:9px;flex-wrap:wrap}
+  .planner-page .care-needs span{padding:4px 6px}
+  .planner-page .care-next{padding:9px}
+  .planner-page:has(#workspace:not([hidden]))>.legal-footer{width:calc(100% - 96px);max-width:1500px;margin:14px auto 0;padding:10px 0;flex:none;font-size:11px}
+  .planner-page:has(#workspace:not([hidden]))>.legal-footer p{display:none}
+  .planner-page:has(#workspace:not([hidden]))>.legal-footer nav{justify-content:flex-end}
+}
+
+/* Compact windows keep the schedule visible; secondary controls open in dialogs. */
+.workspace-dialog{width:480px}.workspace-dialog .task-form{margin-top:18px;border:0;padding:0;box-shadow:none}.workspace-dialog .focus-card{margin-top:18px}
+@media(max-width:1099px),(max-height:739px){
+ .planner-page:has(#workspace:not([hidden])) .topbar,.planner-page:has(#workspace:not([hidden])) main,.planner-page:has(#workspace:not([hidden]))>.legal-footer{width:calc(100% - 40px)}
+ .planner-page:has(#workspace:not([hidden])) .topbar{height:54px}
+ .planner-page:has(#workspace:not([hidden])) main{padding-top:10px}
+ .planner-page:has(#workspace:not([hidden])) .heading{margin-bottom:12px;min-height:48px}
+ .planner-page:has(#workspace:not([hidden])) h1{font-size:32px}
+ .planner-page #workspace{grid-template-columns:minmax(0,1fr) 220px;gap:22px}
+ .planner-page .schedule-tools{gap:12px}
+ .planner-page #open-composer{font-size:12px;padding:9px 12px;min-height:36px}
+ .planner-page #open-timer{display:none}
+ .planner-page .heading>.progress-card{width:170px;padding:12px;margin-right:18px}
+ .planner-page .task-form{align-self:auto}
+ .planner-page #task-name{min-height:80px}
+ .planner-page .care-card{display:none}
+ .planner-page:has(#workspace:not([hidden]))>.legal-footer{margin-top:8px;padding:8px 0}
+}
+@media(max-width:699px){
+ .planner-page #workspace{grid-template-columns:minmax(0,1fr)}
+ .planner-page .sidekick{display:none}
+ .planner-page .heading{gap:10px}
+ .planner-page .heading>.progress-card{display:none}
+ .planner-page #open-timer{display:block}
+ .planner-page .schedule-toolbar{flex-wrap:wrap;gap:6px;margin-bottom:8px}
+ .planner-page .schedule-tools{width:100%;justify-content:space-between;gap:8px;margin:0}
+ .planner-page .schedule-scroll{padding-right:3px}
+ .planner-page .task-row{grid-template-columns:52px minmax(0,1fr);gap:7px}
+ .planner-page .task-row:before{left:47px}
+ .planner-page .task-card{padding:14px 10px}
+ .planner-page .task-time{font-size:9px}
+ .planner-page .all-day-events{margin-left:59px}
+ .planner-page .workspace-dialog .focus-card{width:100%;max-width:none}
+}
+/* Keep task text and actions within a comfortable reading width. */
+.planner-page .schedule-panel{width:100%;max-width:760px;justify-self:center}
+
+/* Calendar controls stay above the scrolling agenda, regardless of event count. */
+.planner-page .calendar-status{flex:none;align-items:center;gap:12px;padding:10px 12px;border:1px solid #d7e1e5;border-radius:10px;background:#edf2f3;margin-bottom:10px;font-size:11px}
+.calendar-connection{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;min-width:0}
+.planner-page #calendar-manage{padding:0;min-height:26px;font-size:11px;font-weight:600;color:#405e68;text-align:left}
+.planner-page #calendar-retry{flex:none;font-size:11px}
+.planner-page .calendar-status[data-state=attention]{background:#fff3df;border-color:#e4cfaa;color:#795a31}
+.agenda-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex:none}
+.agenda-filters{display:flex;gap:3px;border:1px solid #dce1d2;border-radius:8px;padding:3px;flex:none}
+.agenda-filters button{background:transparent;border-radius:5px;padding:7px 10px;font-size:11px;color:#657457}
+.agenda-filters button[aria-pressed=true]{background:#e1e9d6;color:#344b27}
+#agenda-zone{font-size:10px;color:#64715b;overflow-wrap:anywhere;text-align:right}
+.all-day-event a{color:inherit;text-underline-offset:3px}
+@media(max-width:699px){.planner-page .calendar-status{padding:7px 10px;margin-bottom:8px}.calendar-connection{gap:0 8px}.agenda-controls{gap:8px;margin-bottom:8px}#agenda-zone{font-size:9px}.agenda-filters button{padding:6px 8px}}
+/* Keep the selected day and its navigation together. */
+.planner-page:has(#workspace:not([hidden])) .heading{justify-content:flex-start;gap:20px}
+.planner-page .heading>div:first-child{order:0;flex:none}
+.planner-page .heading>.date-control{order:1;margin:0;gap:6px;border:1px solid #dce2d0;background:#fffef8;border-radius:12px;padding:4px 6px}
+.planner-page .date-control input{border:0;border-radius:8px;background:transparent;padding:7px 8px;font-size:12px;color:#46563c;min-height:34px;color-scheme:light}
+.planner-page .date-control #today{padding:7px 10px;border-radius:8px;background:#eaf0e0;color:#4c633b;min-height:34px;font-size:11px}
+.planner-page .heading>.progress-card{order:2;margin-left:auto;margin-right:0}
+@media(max-width:699px){.planner-page:has(#workspace:not([hidden])) .heading{gap:10px;flex-wrap:wrap}.planner-page .heading>.date-control{padding:3px}.planner-page .date-control input{font-size:11px;padding:6px;max-width:132px}.planner-page .date-control #today{padding:6px 8px}}
+.planner-settings{margin-top:20px}.planner-settings h3{font-size:14px;margin-bottom:12px}.settings-copy{font-size:11px;line-height:1.65;color:#65735b;margin:12px 0}.setting-toggle{display:flex;flex-direction:row;align-items:flex-start;gap:10px;line-height:1.5}.setting-toggle input{margin:3px 0 0;accent-color:#74875c;flex:none}#onboarding-done{margin:16px 12px 0 0}
+.group-color-control{margin-top:10px;gap:6px}.group-color-control select{font-size:12px;min-height:36px;width:100%}#group-color-note,#group-color-status{margin-top:6px;max-width:190px}#group-color-status:empty,#edit-group-color-status:empty{display:none}
+/* Expanded task options stay reachable in shorter desktop workspaces. */
+.planner-page #workspace>.planner .task-form{max-height:100%;overflow-y:auto}
+
+:root{--good-day-workspace-ready:1}

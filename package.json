@@ -1,0 +1,8 @@
+{
+  "name": "good-day-planner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/model.test.mjs tests/google-calendar.test.mjs tests/agenda.test.mjs tests/rollover.test.mjs tests/group-colors.test.mjs"
+  }
+}
