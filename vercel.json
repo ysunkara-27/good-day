@@ -5,14 +5,35 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
-    { "source": "/dog", "destination": "/", "permanent": true },
-    { "source": "/dog/:path*", "destination": "/:path*", "permanent": true }
+    {
+      "source": "/dog/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/dog/:path+/",
+      "destination": "/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/dog",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/dog/:path*",
+      "destination": "/:path*",
+      "permanent": true
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     }
   ]
