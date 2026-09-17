@@ -6,6 +6,7 @@ import {findPath,freePoint,petSize} from './pet-world.mjs';
 export function puppySVG(profile = defaultPet) {
   const {fur, ears, cream} = coats[profile.coat] || coats.honey;
   const collar = collars[profile.collar] || collars.sage;
+  if(profile.species==='cat')return `<svg class="puppy" viewBox="0 0 110 110" aria-hidden="true"><ellipse cx="55" cy="98" rx="32" ry="5" fill="#596246" opacity=".12"/><path d="M77 91 Q109 96 96 56" fill="none" stroke="${ears}" stroke-width="10" stroke-linecap="round"/><ellipse cx="55" cy="79" rx="25" ry="22" fill="${fur}"/><ellipse cx="55" cy="85" rx="12" ry="14" fill="${cream}"/><path d="M24 45 L24 10 L46 28 Q56 23 68 28 L89 10 L86 51 Q86 76 55 77 Q22 76 24 45" fill="${fur}" stroke="#645043" stroke-width="1.6"/><path d="M29 32 L29 19 L40 31 M73 31 L84 19 L82 36" fill="#dc9290"/><ellipse cx="39" cy="48" rx="5" ry="6" fill="#3c332f"/><ellipse cx="71" cy="48" rx="5" ry="6" fill="#3c332f"/><path d="M50 58 L60 58 L55 64 Z" fill="#c68193"/><path d="M55 64 Q48 72 44 66 M55 64 Q61 72 66 66 M34 59 L10 55 M34 65 L10 69 M76 59 L101 55 M76 65 L101 69" fill="none" stroke="#645043" stroke-width="1.5"/><path d="M35 76 Q55 84 75 76" fill="none" stroke="${collar}" stroke-width="5"/></svg>`;
   return `<svg class="puppy" viewBox="0 0 110 110" aria-hidden="true">
     <ellipse cx="55" cy="98" rx="31" ry="5" fill="#596246" opacity=".12"/>
     <g class="puppy-tail"><path d="M77 79 Q101 58 95 76 Q91 90 76 88" fill="${ears}" stroke="#645043" stroke-width="1.6"/></g>

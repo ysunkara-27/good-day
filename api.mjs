@@ -79,7 +79,7 @@ export async function handleDog(request,env,headers={}){
    const carried=day===careDay(zone)?await carryForward(env,user.id,day):{moved:0,pending:0};
    const row=await env.DB.prepare('SELECT data,revision FROM dog_days WHERE user_id=? AND day=?').bind(user.id,day).first();
    const profile=await env.DB.prepare('SELECT data FROM dog_profiles WHERE user_id=?').bind(user.id).first();
-   return reply({groupColors:await readGroupColors(env,user.id),carried,care:await readCare(env,user.id,url.searchParams.get('zone')||'UTC'),username:user.username,pet:profile?JSON.parse(profile.data):defaultPet,plan:row?JSON.parse(row.data):null,revision:row?.revision??0});
+   return reply({groupColors:await readGroupColors(env,user.id),carried,care:await readCare(env,user.id,url.searchParams.get('zone')||'UTC',new Date(),user),username:user.username,pet:profile?JSON.parse(profile.data):defaultPet,plan:row?JSON.parse(row.data):null,revision:row?.revision??0});
   }
   if(request.method!=='PUT')return reply({error:'Method not allowed.'},405);
   careDay(url.searchParams.get('zone')||'UTC');
@@ -88,6 +88,6 @@ export async function handleDog(request,env,headers={}){
   await env.DB.prepare('INSERT OR IGNORE INTO dog_days(user_id,day,data,revision) VALUES (?,?,?,0)').bind(user.id,day,JSON.stringify({start:540,tasks:[]})).run();
   const saved=await env.DB.prepare('UPDATE dog_days SET data=?,revision=revision+1 WHERE user_id=? AND day=? AND revision=?').bind(JSON.stringify(plan),user.id,day,revision).run();
   if(!saved.meta.changes)return reply({error:'This day changed in another tab. Reload the day before editing.'},409);
-  return reply({plan,revision:revision+1,care:await readCare(env,user.id,url.searchParams.get('zone')||'UTC')});
+  return reply({plan,revision:revision+1,care:await readCare(env,user.id,url.searchParams.get('zone')||'UTC',new Date(),user)});
  }catch(error){if(error.message.startsWith('Choose')||error.message.startsWith('Tasks')||error.message.startsWith('A day'))return reply({error:error.message},400);console.error('Dog API request failed',error);return reply({error:'Could not save your day. Please try again.'},500);}
 }

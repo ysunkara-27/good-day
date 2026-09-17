@@ -15,7 +15,9 @@ try{
  await expect(page.locator('.task-row')).toHaveCount(3);
  await page.getByRole('checkbox',{name:'Complete: Read',exact:true}).click();
  await expect(page.locator('#care-next')).toBeEnabled();await page.locator('#care-next').click();
+ await page.locator('#clubhouse [data-feed]').click();
  await expect(page.locator('#care-needs')).toContainText('✓ Meal');
+ await page.getByRole('button',{name:'Close companion club'}).click();
  await page.getByRole('checkbox',{name:'Complete: Write',exact:true}).click();
  await expect(page.locator('#care-next')).toHaveText('Go sniffing');await page.locator('#care-next').click();
  await expect(page.locator('#pet-toss')).toBeVisible({timeout:15000});

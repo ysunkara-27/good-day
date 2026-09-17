@@ -79,7 +79,7 @@
         <button id="care-open" class="care-heading" type="button"><span id="care-name">Biscuit</span><span id="care-badge"></span></button>
         <div id="pet-home" class="pet-home" aria-hidden="true"><div class="pet-rug"></div><div class="home-bowl"><i></i><i></i><i></i></div><div class="home-toy"></div><div class="home-blanket"></div></div>
         <p id="care-summary"></p><div id="care-needs" class="care-needs"></div>
-        <button id="care-next" class="care-next" type="button"></button>
+        <button id="club-shortcut" type="button" class="quiet">Visit companion club ↗</button><button id="care-next" class="care-next" type="button"></button>
 
       </section>
       <section id="focus" class="focus-card">
@@ -94,7 +94,7 @@
   </div>
   <div id="notice" role="status" aria-live="polite" hidden></div><button id="reload" hidden class="quiet">Reload day</button>
 </main>
-<footer class="legal-footer"><p>task pup is a daily planner with a focus timer, a virtual dog, and optional read-only Google Calendar events.</p><nav aria-label="Legal"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a></nav></footer>
+<footer class="legal-footer"><span id="hourly-quote" class="hourly-quote"></span><p>task pup is a daily planner with a focus timer, a virtual dog, and optional read-only Google Calendar events.</p><nav aria-label="Legal"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a></nav></footer>
 <div id="pet-wanderer" class="pet-wanderer" data-action="idle"><span id="pet-reaction" class="pet-reaction" aria-live="polite"></span><button id="pet-button" aria-label="Play with Biscuit" aria-haspopup="dialog"><span id="pet-sprite"></span></button><span class="pet-held-ball" aria-hidden="true"></span></div><div id="pet-world-ball" class="pet-world-ball" aria-hidden="true" hidden></div>
 <dialog id="composer-dialog" class="workspace-dialog" aria-labelledby="composer-title"><div class="dialog-heading"><h2 id="composer-title">Add tasks</h2><button id="close-composer" class="quiet" type="button" aria-label="Close task entry">✕</button></div></dialog>
 <dialog id="timer-dialog" class="workspace-dialog" aria-label="Focus timer"><div class="dialog-heading"><h2>Focus timer</h2><button id="close-timer" class="quiet" type="button" aria-label="Close timer">✕</button></div></dialog>
@@ -115,7 +115,7 @@
   <div class="dialog-heading"><h2 id="pet-dialog-name">Biscuit</h2><button type="button" id="close-pet" class="quiet" aria-label="Close dog menu">✕</button></div>
   <div id="pet-dialog-preview" class="pet-preview" aria-hidden="true"></div>
   <p id="pet-need-summary" class="pet-need-summary"></p>
-  <div id="pet-care-actions" class="pet-care-actions"></div>
+  <button id="open-club" class="primary" type="button">Play, meals & companions →</button><div id="pet-care-actions" class="pet-care-actions"></div>
   <p id="pet-feedback" class="pet-feedback" role="status"></p>
   <p id="pet-memory" class="pet-memory"></p>
   <div class="pet-commands"><button type="button" id="pet-call" class="quiet">Come here</button><button type="button" id="pet-trick" class="quiet" disabled>Learn paw · 3 tasks</button></div>

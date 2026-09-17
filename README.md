@@ -78,3 +78,13 @@ Carryover adds `dog_settings` and a transient `dog_rollover_moves` table. Apply 
 Task group colors are account-wide, case-insensitive assignments. Add/edit a task, enter its group, then choose Group color (Automatic or one of six themed colors). Changes immediately apply across days, including carried tasks. `dog_group_colors` is additive in `schema.sql`; apply the schema before deploying this API update.
 
 Startup uses root-relative asset URLs and an inline, styled loading/recovery screen. The planner is revealed only after its stylesheets and modules load. Failed or stalled loads show a retry link after at most 12 seconds; disabled JavaScript gets an explicit message. API load failures show a retry card and recover when connectivity returns. Retry preserves browser storage. These paths are included in the loading and recovery browser tests.
+
+## Companion club and request log
+
+The dog menu opens a dedicated club with meal selection, keyboard/touch ball play, pats, and earned tricks. Each unique saved task-day completion earns 10 XP; ten completions add a level. One completion a day builds a streak, with yesterday kept alive until today ends. Best streak permanently unlocks Mochi the cat (3 days), Pepper (7), Cocoa (14), and Luna the cat (30). Selecting a companion persists its appearance in the existing profile; other earned companions remain in the collection. A missed day never removes companions. Profile species is optional, so existing dogs need no migration.
+
+Only the authenticated username `yash` receives the playground capability. Its toggle previews all companions, meals, and tricks without writing completions, care, or stats. Normal care still uses the existing server-side earning rules even for Yash. Original encouragement rotates on each hour boundary and refreshes on returning to the page; no push notifications or external quote service.
+
+Ideas & requests opens a compact public log backed by the shared Worker's `/requests?site=dog` endpoint. Rides uses `site=rides`; logs are separate, latest 50 entries, 5–400 characters, and at most five submissions per IP hash per hour. Tables and indexes are created idempotently on first use. No new secrets or schema migration are required. `feature-log.mjs` is copied to rides so both frontend deployments remain self-contained.
+
+Tests: `npm test` in this repository; shared rides tests remain in the portfolio repository. The fixture-only desktop/mobile browser suite is `node scripts/test-playful-sites.mjs` from the portfolio root with a static server on port 8106. It mocks every API request and does not write real plans, rides, or scores.

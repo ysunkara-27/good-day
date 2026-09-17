@@ -8,8 +8,8 @@ export const coats = {
 export const collars = {sage: '#809c76', berry: '#c68193', blue: '#7f9ebb'};
 export function validatePet(pet = defaultPet) {
   if (!pet || typeof pet.name !== 'string' || !pet.name.trim() || pet.name.trim().length > 24 ||
-      !Object.hasOwn(coats, pet.coat) || !Object.hasOwn(collars, pet.collar) || typeof pet.roaming !== 'boolean') {
+      !Object.hasOwn(coats, pet.coat) || !Object.hasOwn(collars, pet.collar) || typeof pet.roaming !== 'boolean' || (pet.species !== undefined && !['dog','cat'].includes(pet.species))) {
     throw new Error('Choose a dog name (1–24 characters), coat, and collar.');
   }
-  return {name: pet.name.trim(), coat: pet.coat, collar: pet.collar, roaming: pet.roaming};
+  return {name: pet.name.trim(), coat: pet.coat, collar: pet.collar, roaming: pet.roaming,...(pet.species==='cat'?{species:'cat'}:{})};
 }

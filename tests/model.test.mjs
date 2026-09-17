@@ -10,7 +10,7 @@ import {validatePet,defaultPet} from '../pet-profile.mjs';
 test('dog profile defaults support existing users and reject invalid customization',()=>{
  assert.deepEqual(validatePet(),defaultPet);
  assert.equal(validatePet({...defaultPet,name:'  Mochi  '}).name,'Mochi');
- for(const patch of [{name:''},{name:'a'.repeat(25)},{coat:'__proto__'},{collar:'red'},{roaming:1}])assert.throws(()=>validatePet({...defaultPet,...patch}));
+ for(const patch of [{name:''},{name:'a'.repeat(25)},{coat:'__proto__'},{collar:'red'},{roaming:1},{species:'dragon'}])assert.throws(()=>validatePet({...defaultPet,...patch}));
 });
 
 test('fixed task times persist; missing or cleared times remain automatic',()=>{
@@ -34,3 +34,5 @@ test('midnight and overnight reservations retain their exact times',()=>{
  const rows=schedule({start:1410,tasks:[{...task('late',60),scheduledStart:1410},task('auto',15),{...task('midnight',10),scheduledStart:0}]});
  assert.deepEqual(rows.map(t=>[t.id,t.start,t.end]),[['midnight',0,10],['late',1410,1470],['auto',1470,1485]]);
 });
+
+test('cat appearance persists and switching back to a dog clears optional species',()=>{assert.equal(validatePet({...defaultPet,species:'cat'}).species,'cat');assert.deepEqual(validatePet({...defaultPet,species:'dog'}),defaultPet);});

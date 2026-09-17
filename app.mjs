@@ -1,3 +1,6 @@
+import {mountFeatureLog} from './feature-log.mjs';
+import {mountClubhouse} from './clubhouse.mjs';
+import {hourlyQuote} from './progression.mjs';
 import {localDay,progress,timeLabel,clockMinutes,clockValue} from './model.mjs';
 import {defaultPet} from './pet-profile.mjs';
 import {createCompanion,puppySVG} from './pet.mjs';
@@ -6,6 +9,7 @@ import {groupPalette,groupKey,groupColor} from './group-colors.mjs';
 import {buildAgenda} from './agenda.mjs';
 const $=id=>document.getElementById(id);
 const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://127.0.0.1:8791':'https://hooraas-rides-api.sunkarayashaswi.workers.dev';
+mountFeatureLog({site:'dog',api:API,host:document.querySelector('.legal-footer nav')});
 let token=localStorage.getItem('good-day-token')||'',username='',day=localDay(),revision=0,plan={start:540,tasks:[]},busy=false,signup=false,editId=null,focusId=null,remaining=1500,deadline=null,timerLength=1500,noticeTimeout,loadSequence=0;
 let knownToday=localDay();
 let pet={...defaultPet},care=null,careBusy=false;
@@ -21,7 +25,7 @@ async function api(path,method='GET',body){let response;try{response=await fetch
 function setBusy(value){busy=value;for(const element of document.querySelectorAll('#workspace button,#workspace input,#workspace textarea,#workspace select,#task-form button,#task-form input,#task-form textarea,#focus button,#focus input,#focus select,#day,#today,#account,#edit-form button,#edit-form input,#focus-done'))element.disabled=value;$('timer-minutes').disabled=value||!!deadline;if(!value)renderCare();}
 function showAuth(){
  loadSequence++;agendaView='all';groupColors={};setBusy(false);signup=false;updateAuthMode();
- $('edit-dialog').close();$('pet-dialog').close();$('account-dialog').close();calendarSequence++;calendar={ready:false,connected:false,reconnect:false,events:[],updated:null,error:'',loading:false};$('loading').hidden=true;$('auth').hidden=false;
+ clubhouse.close();$('edit-dialog').close();$('pet-dialog').close();$('account-dialog').close();calendarSequence++;calendar={ready:false,connected:false,reconnect:false,events:[],updated:null,error:'',loading:false};$('loading').hidden=true;$('auth').hidden=false;
  $('workspace').hidden=true;$('account').hidden=true;$('date-control').hidden=true;$('reload').hidden=true;$('load-error').hidden=true;
  care=null;resetTimer();plan={start:540,tasks:[]};pet={...defaultPet};companion.setProfile(pet);
  renderDog();renderFocus();$('date-label').textContent='';$('page-title').textContent='Your day.';
@@ -187,11 +191,17 @@ function openPet(){
  renderCare();$('pet-dialog').showModal();
 }
 const companion=createCompanion({onOpen:openPet});
+const clubhouse=mountClubhouse({getState:()=>({pet,care}),serveMeal:()=>performCare('meal',true),savePet});
+$('open-club').onclick=()=>{$('pet-dialog').close();clubhouse.open('play');};
+$('club-shortcut').onclick=()=>clubhouse.open('play');
+function renderQuote(){document.querySelectorAll('.hourly-quote').forEach(el=>el.textContent=hourlyQuote());}
+function scheduleQuote(){renderQuote();setTimeout(scheduleQuote,3600000-Date.now()%3600000);}
+scheduleQuote();document.addEventListener('visibilitychange',renderQuote);
 $('pet-menu').onclick=openPet;
 $('close-pet').onclick=()=>$('pet-dialog').close();
 $('pet-dialog').addEventListener('click',event=>{if(event.target===$('pet-dialog')){const r=event.target.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)event.target.close();}});
 function renderCare(){
- $('care-card').hidden=!care;
+ $('care-card').hidden=!care;clubhouse.render();
  companion.setCare(care);
  $('care-name').textContent=pet.name;
  const next=care?.needs.find(n=>!n.done),ready=care?.needs.filter(n=>n.ready).length||0;
@@ -200,19 +210,19 @@ function renderCare(){
  $('care-badge').textContent=ready?`${ready} ready`:'Today';
  $('care-needs').innerHTML=(care?.needs||[]).map(n=>`<span class="${n.done?'satisfied':n.ready?'ready':''}">${n.done?'✓ ':''}${n.title}</span>`).join('');
  $('care-next').textContent=next?next.verb:'All cared for';$('care-next').disabled=!next?.ready||careBusy;
- $('care-next').onclick=()=>next&&performCare(next.id);
+ $('care-next').onclick=()=>{if(next?.id==='meal')clubhouse.open('meal');else if(next)performCare(next.id);};
  $('pet-care-actions').innerHTML=(care?.needs||[]).map(n=>`<button type="button" data-care="${n.id}" ${!n.ready||careBusy?'disabled':''}><span>${n.done?'✓ '+n.satisfied:n.verb}</span><small>${n.done?'Done today':n.ready?'Ready':n.level===1?'Finish your first task':n.level===2?'Finish half your tasks':'Finish your plan'}</small></button>`).join('');
  $('pet-memory').textContent=care?.last?.task?`Last ${care.last.action}: after “${care.last.task}”.`:'';
  $('pet-trick').disabled=!care?.tricks.length;
  $('pet-trick').textContent=care?.tricks.length?`Ask for a trick · ${care.tricks.join(', ')}`:`Learn paw · ${Math.max(0,3-(care?.lifetime||0))} tasks to go`;
 }
-async function performCare(action){
+async function performCare(action,keepOpen=false){
  if(careBusy||!care)return;careBusy=true;renderCare();
- try{const data=await api(`care?zone=${zone()}`,'POST',{action,day:care.day});care=data.care;renderCare();$('pet-dialog').close();requestAnimationFrame(()=>companion.performCare(action));}
+ try{const data=await api(`care?zone=${zone()}`,'POST',{action,day:care.day});care=data.care;renderCare();if(!keepOpen)$('pet-dialog').close();requestAnimationFrame(()=>companion.performCare(action));return true;}
  catch(error){notice(error.message);try{care=(await api(`care?zone=${zone()}`)).care;}catch{}}
  finally{careBusy=false;renderCare();}
 }
-$('pet-care-actions').onclick=event=>{const button=event.target.closest('[data-care]');if(button&&!button.disabled)performCare(button.dataset.care);};
+$('pet-care-actions').onclick=event=>{const button=event.target.closest('[data-care]');if(button&&!button.disabled){if(button.dataset.care==='meal'){$('pet-dialog').close();clubhouse.open('meal');}else performCare(button.dataset.care);}};
 $('care-open').onclick=openPet;
 $('pet-call').onclick=()=>{$('pet-dialog').close();companion.call();};
 $('pet-trick').onclick=()=>{$('pet-dialog').close();companion.trick();};
