@@ -1,3 +1,4 @@
+import {publishCompanion} from './companion-bridge.mjs';
 import {mountFeatureLog} from './feature-log.mjs';
 import {mountClubhouse} from './clubhouse.mjs';
 import {hourlyQuote} from './progression.mjs';
@@ -84,6 +85,7 @@ function renderFocus(){
 function tick(){
  if(deadline){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining){deadline=null;notice('Timer finished.');}}
  companion.setFocus(!!deadline);
+ publishCompanion({pet,care,focused:!!deadline,signedIn:!!token});
  $('timer').textContent=`${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
  $('timer-toggle').textContent=deadline?'Pause':remaining===0?'Start again':remaining===timerLength?'Start':'Resume';
  $('timer-minutes').disabled=busy||!!deadline;
@@ -203,6 +205,7 @@ $('pet-dialog').addEventListener('click',event=>{if(event.target===$('pet-dialog
 function renderCare(){
  $('care-card').hidden=!care;clubhouse.render();
  companion.setCare(care);
+ publishCompanion({pet,care,focused:!!deadline,signedIn:!!token});
  $('care-name').textContent=pet.name;
  const next=care?.needs.find(n=>!n.done),ready=care?.needs.filter(n=>n.ready).length||0;
  const summary=!care?'Complete today’s tasks to care for your dog.':next?(next.ready?`${next.title} is ready.`:`${next.need} · ${next.remaining} more ${next.remaining===1?'task':'tasks'} to ${next.title.toLowerCase()}.`):'Fed, exercised, and cozy.';

@@ -88,3 +88,7 @@ Only the authenticated username `yash` receives the playground capability. Its t
 Ideas & requests opens a compact public log backed by the shared Worker's `/requests?site=dog` endpoint. Rides uses `site=rides`; logs are separate, latest 50 entries, 5–400 characters, and at most five submissions per IP hash per hour. Tables and indexes are created idempotently on first use. No new secrets or schema migration are required. `feature-log.mjs` is copied to rides so both frontend deployments remain self-contained.
 
 Tests: `npm test` in this repository; shared rides tests remain in the portfolio repository. The fixture-only desktop/mobile browser suite is `node scripts/test-playful-sites.mjs` from the portfolio root with a static server on port 8106. It mocks every API request and does not write real plans, rides, or scores.
+
+## Optional browser companion
+
+`companion-bridge.mjs` publishes a display-only snapshot for the personal Task Pup Chrome extension: pet appearance/name, care flags, signed-in state, and a focus boolean. No session token, username, task text, calendar data, or care memories are exported. The bridge answers a DOM handshake and only broadcasts when the display state changes. It requires no backend changes. The extension lives in the portfolio repository's `taskpup-extension/` directory and is installed with Chrome's Load unpacked workflow.

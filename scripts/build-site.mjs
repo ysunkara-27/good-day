@@ -8,7 +8,7 @@ await mkdir(output, { recursive: true });
 const files = [
   'index.html', 'style.css', 'workspace.css', 'legal.css', 'css', 'privacy', 'terms',
   'analytics.js', 'app.mjs', 'workspace.mjs', 'model.mjs', 'agenda.mjs', 'calendar-model.mjs',
-  'clubhouse.mjs', 'progression.mjs', 'feature-log.mjs',
+  'companion-bridge.mjs', 'clubhouse.mjs', 'progression.mjs', 'feature-log.mjs',
   'care-model.mjs', 'group-colors.mjs', 'pet.mjs', 'pet-profile.mjs', 'pet-world.mjs',
 ];
 for (const file of files) {
